@@ -165,6 +165,12 @@ const updateTarget = () =>{
     addSprite(Math.floor(Math.random()*4)+3,7,othertarget)
   }
 }
+  for(let i = 0; i < getAll(target).length;i++){
+    getAll(target)[i].y+=1;
+  }
+  for(let i = 0; i < getAll(othertarget).length;i++){
+    getAll(othertarget)[i].y-=1;
+  }
 }
 setInterval(updateArrows,100);
 setInterval(updateotherArrows,100);
