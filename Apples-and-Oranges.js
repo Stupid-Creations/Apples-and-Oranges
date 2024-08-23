@@ -16,24 +16,24 @@ const arrow = "A"
 const otherarrow = "a"
 
 setLegend(
-  [ player, bitmap`
+  [player, bitmap`
 ................
 ................
 .........C......
 ......44.1C.....
 ......C4.1.C....
 ......C..1..C...
-..000.C.000..C..
+..000.C.00...C..
 .0030000000...C.
-.0333300330000C.
-.0330333030...C.
-.0333333330..C..
-.0333000330.C...
+.0333333330000C.
+.0333303030...C.
+.0333303030..C..
+.0333333330.C...
 .003333330.C....
 ..00000000C.....
 ...0....0.......
-...0....0.......` ],
-  [ player2, bitmap`
+...0....0.......`],
+  [player2, bitmap`
 ................
 ................
 .....44..C......
@@ -42,10 +42,10 @@ setLegend(
 ...00000.1..C...
 ..0999990000.C..
 .0999999990...C.
-.0999999990000C.
-.0990999090...C.
+.0999909090000C.
+.0999909090...C.
 .0999999990..C..
-.0999900990.C...
+.0999999990.C...
 .009999990.C....
 ..0000000CC.....
 ...0....0.......
@@ -99,7 +99,7 @@ setLegend(
 ................
 ................
 ................
-................`],[othertarget, bitmap`
+................`], [othertarget, bitmap`
 ................
 .........3333...
 ........332233..
@@ -118,8 +118,8 @@ setLegend(
 ........CCCCCC..`]
 )
 
-setSolids([])
-
+setSolids([target, othertarget])
+let threshold = 0.35
 let level = 0
 const levels = [
   map`
@@ -136,60 +136,87 @@ P......
 setMap(levels[level])
 
 setPushables({
-  [ player ]: []
+  [player]: []
 })
 
-const updateArrows = () =>{
-  for(let i = 0; i < getAll(arrow).length; i++){
-    getAll(arrow)[i].x += 1
-        if(getAll(arrow)[i].x >= 6){
+const updateArrows = () => {
+  for (let i = 0; i < getAll(arrow).length; i++) {
+    if (getAll(arrow)[i].x >= 6) {
       getAll(arrow)[i].remove()
     }
   }
+  for (let i = 0; i < getAll(arrow).length; i++) {
+    getAll(arrow)[i].x += 1
+  }
 }
 
-const updateotherArrows = () =>{
-  for(let i = 0; i < getAll(otherarrow).length; i++){
-    getAll(otherarrow)[i].x += 1
-    if(getAll(otherarrow)[i].x === 6){
+const updateotherArrows = () => {
+
+  for (let i = 0; i < getAll(otherarrow).length; i++) {
+    if (getAll(otherarrow)[i].x >= 6) {
       getAll(otherarrow)[i].remove()
     }
   }
-}
-
-const updateTarget = () =>{
-  if(Math.random() > 0.15){
-    if(Math.random() > 0.5){
-    addSprite(Math.floor(Math.random()*4)+3,0,target)
-  }else{
-    addSprite(Math.floor(Math.random()*4)+3,7,othertarget)
+  for (let i = 0; i < getAll(otherarrow).length; i++) {
+    getAll(otherarrow)[i].x += 1
   }
 }
-  for(let i = 0; i < getAll(target).length;i++){
-    getAll(target)[i].y+=1;
-        if(getAll(target)[i].y === 7){
+
+const updateTarget = () => {
+  if (Math.random() > threshold) {
+    if (Math.random() > 0.5) {
+      addSprite(Math.floor(Math.random() * 4) + 3, 0, target)
+    } else {
+      addSprite(Math.floor(Math.random() * 4) + 3, 7, othertarget)
+    }
+  }
+  for(let i = 0; i < getAll(target).length; i++){
+        if (getAll(target)[i].y === 7) {
       getAll(target)[i].remove()
     }
   }
-  for(let i = 0; i < getAll(othertarget).length;i++){
-    getAll(othertarget)[i].y-=1;
-        if(getAll(othertarget)[i].y === 0){
+  for (let i = 0; i < getAll(target).length; i++) {
+    getAll(target)[i].y += 1;
+  }
+  for(let i = 0;  i < getAll(othertarget).length; i++){
+        if (getAll(othertarget)[i].y === 0) {
       getAll(othertarget)[i].remove()
     }
   }
+  for (let i = 0; i < getAll(othertarget).length; i++) {
+    getAll(othertarget)[i].y -= 1;
+  }
 }
-setInterval(updateArrows,100);
-setInterval(updateotherArrows,100);
-setInterval(updateTarget,1000);
 
+const checkHit = () => {
+      for(let j = 0; j < getAll(arrow).length;j++){
+        for(let k = 0; k < getAll(target).length;k++){
+          if(getAll(arrow)[j].x == getAll(target)[k].x && getAll(arrow)[j].y == getAll(target)[k].y){
+            clearTile(arrow[j].x, arrow[j].y)
+          }
+      }
+  }
+    for (let i = 0; i < getAll(otherarrow).length; i++) {
+    if(tilesWith(getAll(otherarrow)[i], target).length > 0||tilesWith(getAll(otherarrow)[i], othertarget).length > 0){
+      clearTile(tilesWith(target,otherarrow)[i].x, tilesWith(target,otherarrow)[i].y);  
+      clearTile(tilesWith(othertarget,otherarrow)[i].x, tilesWith(othertarget,otherarrow)[i].y);     
+      console.log("hit")
+    }
+  }
+}
+setInterval(checkHit,1);
+
+setInterval(updateArrows, 100);
+setInterval(updateotherArrows, 100);
+setInterval(updateTarget, 500);
 onInput("w", () => {
   getFirst(player).y -= 1
 })
 onInput("s", () => {
   getFirst(player).y += 1
 })
-onInput("d",() => {
-  addSprite(getFirst(player).x+1,getFirst(player).y,arrow)
+onInput("d", () => {
+  addSprite(getFirst(player).x + 1, getFirst(player).y, arrow)
 })
 
 onInput("i", () => {
@@ -198,12 +225,12 @@ onInput("i", () => {
 onInput("k", () => {
   getFirst(player2).y += 1
 })
-onInput("l",() => {
-  addSprite(getFirst(player2).x+1,getFirst(player2).y,otherarrow)
+onInput("l", () => {
+  addSprite(getFirst(player2).x + 1, getFirst(player2).y, otherarrow)
 })
 
 
 
 afterInput(() => {
-  
+
 })
