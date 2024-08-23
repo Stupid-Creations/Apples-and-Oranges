@@ -122,6 +122,28 @@ setPushables({
   [ player ]: []
 })
 
+const updateArrows = () =>{
+  for(let i = 0; i < getAll(arrow).length; i++){
+    getAll(arrow)[i].x += 1
+        if(getAll(arrow)[i].x >= 6){
+      getAll(arrow)[i].remove()
+    }
+  }
+}
+
+const updateotherArrows = () =>{
+  for(let i = 0; i < getAll(otherarrow).length; i++){
+    getAll(otherarrow)[i].x += 1
+    if(getAll(otherarrow)[i].x === 6){
+      getAll(otherarrow)[i].remove()
+    }
+  }
+}
+
+
+setInterval(updateArrows,100);
+setInterval(updateotherArrows,100);
+
 onInput("w", () => {
   getFirst(player).y -= 1
 })
