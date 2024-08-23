@@ -11,6 +11,7 @@ https://sprig.hackclub.com/gallery/getting_started
 const player = "p"
 const player2 = "P"
 const target = "T"
+const othertarget = 't'
 const arrow = "A"
 const otherarrow = "a"
 
@@ -98,7 +99,23 @@ setLegend(
 ................
 ................
 ................
-................`]
+................`],[othertarget, bitmap`
+................
+.........3333...
+........332233..
+.......33233233.
+.......32333323.
+.......32322323.
+.......32322323.
+.......32322323.
+.......32333323.
+.......33233233.
+........332233..
+.........3333...
+..........CC....
+......CCCCCCCCCC
+.......CCCCCCCC.
+........CCCCCC..`]
 )
 
 setSolids([])
@@ -140,9 +157,18 @@ const updateotherArrows = () =>{
   }
 }
 
-
+const updateTarget = () =>{
+  if(Math.random() > 0.15){
+    if(Math.random() > 0.5){
+    addSprite(Math.floor(Math.random()*4)+3,0,target)
+  }else{
+    addSprite(Math.floor(Math.random()*4)+3,7,othertarget)
+  }
+}
+}
 setInterval(updateArrows,100);
 setInterval(updateotherArrows,100);
+setInterval(updateTarget,1000);
 
 onInput("w", () => {
   getFirst(player).y -= 1
