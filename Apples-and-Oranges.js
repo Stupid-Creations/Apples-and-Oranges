@@ -14,6 +14,7 @@ const target = "T"
 const othertarget = 't'
 const arrow = "A"
 const otherarrow = "a"
+const ground_grass = 'g'
 let score = 0
 let score2 = 0
 let timer = 60
@@ -66,10 +67,10 @@ setLegend(
 .......33233233.
 ........332233..
 .........3333...
-..........CC....
-......CCCCCCCCCC
-.......CCCCCCCC.
-........CCCCCC..`], [arrow, bitmap`
+..........LL....
+..........LL....
+..........LL....
+..........LL....`], [arrow, bitmap`
 ................
 ................
 ................
@@ -115,15 +116,32 @@ setLegend(
 .......33233233.
 ........332233..
 .........3333...
-..........CC....
-......CCCCCCCCCC
-.......CCCCCCCC.
-........CCCCCC..`]
+..........LL....
+..........LL....
+..........LL....
+..........LL....`],  [ground_grass, bitmap`
+1111111111111111
+111LL11111111111
+1111111111111111
+111111LL11111111
+1LL111111111LL11
+1111111111111111
+11111111LLL11111
+1111111111111111
+1LLL11LL11111111
+1111111111111111
+11111LL11111LL11
+1111111111111111
+111111111LL11111
+11LL111111111111
+1111111111111111
+1111111111111111`],
+
 )
 
 setSolids([target, othertarget])
 let threshold = 0.35
-let level = 0
+let level = 1
 const levels = [
   map`
 .........
@@ -133,16 +151,39 @@ const levels = [
 .........
 .........
 ..P......
-.........`
+.........`,map`
+........
+....T...
+.....T..
+..P..aT.
+..p..AT.
+.....T..
+....T...
+........`,map`
+.......
+.......
+...aT..
+.P.aT..
+...aT..
+.......
+.......`,map`
+.......
+.......
+...AT..
+.p.AT..
+...AT..
+.......
+.......`
 ]
 
 setMap(levels[level])
-
+setBackground(ground_grass)
 setPushables({
   [player]: []
 })
 
 const updateArrows = () => {
+  if(level === 0){
   if(getAll(arrow).length > 0){
     if (getFirst(arrow).x >= 8) {
       getFirst(arrow).remove()
@@ -154,9 +195,11 @@ const updateArrows = () => {
     score+=1
   }
 }
+  }
 }
 
 const updateotherArrows = () => {
+  if(level === 0){
   if(getAll(otherarrow).length > 0){
     if (getFirst(otherarrow).x >= 8) {
       getFirst(otherarrow).remove()
@@ -166,14 +209,17 @@ const updateotherArrows = () => {
   if(tilesWith(otherarrow,target).length > 0 || tilesWith(otherarrow,othertarget).length > 0){
     clearTile(getFirst(otherarrow).x,getFirst(otherarrow).y)
     score2 += 1
+  
   }
 }
   addText("P1: \n" + score.toString(),{x:1,y:1})
   addText("P2: \n" + score2.toString(),{x:1,y:13})
   addText(timer.toString(),{x:1,y:6})
+  }
 }
 
 const updateTarget = () => {
+  if(level === 0){
   if (Math.random() > threshold) {
     if (Math.random() > 0.5) {
       addSprite(Math.floor(Math.random() * 5) + 4, 0, target)
@@ -197,11 +243,16 @@ const updateTarget = () => {
   for (let i = 0; i < getAll(othertarget).length; i++) {
     getAll(othertarget)[i].y -= 1;
   }
+  }
 }
 
 const updateTimer = () =>{
+  if(level === 0){
   timer-=1;
+  }
 }
+
+
 
 setInterval(updateArrows, 100);
 setInterval(updateotherArrows, 100);
@@ -234,6 +285,15 @@ onInput("l", () => {
 
 
 
+
+if (level === 1){
+  addText("Apples'n Oranges \n\n\n\n\n\n\n\n\n\n\n\n\nPress A to start",{x:2,y:1,color:color`0`})
+  onInput("a", () => {
+    clearText(),
+    level = 0
+    setMap(levels[level])
+  })
+}
 afterInput(() => {
 
 })
