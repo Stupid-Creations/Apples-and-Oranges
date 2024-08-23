@@ -167,9 +167,15 @@ const updateTarget = () =>{
 }
   for(let i = 0; i < getAll(target).length;i++){
     getAll(target)[i].y+=1;
+        if(getAll(target)[i].y === 7){
+      getAll(target)[i].remove()
+    }
   }
   for(let i = 0; i < getAll(othertarget).length;i++){
     getAll(othertarget)[i].y-=1;
+        if(getAll(othertarget)[i].y === 0){
+      getAll(othertarget)[i].remove()
+    }
   }
 }
 setInterval(updateArrows,100);
