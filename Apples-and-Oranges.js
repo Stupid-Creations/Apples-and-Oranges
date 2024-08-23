@@ -14,6 +14,9 @@ const target = "T"
 const othertarget = 't'
 const arrow = "A"
 const otherarrow = "a"
+let score = 0
+let score2 = 0
+let timer = 60
 
 setLegend(
   [player, bitmap`
@@ -123,14 +126,14 @@ let threshold = 0.35
 let level = 0
 const levels = [
   map`
-.......
-.......
-p......
-.......
-.......
-.......
-P......
-.......`
+.........
+..p......
+.........
+.........
+.........
+.........
+..P......
+.........`
 ]
 
 setMap(levels[level])
@@ -140,38 +143,46 @@ setPushables({
 })
 
 const updateArrows = () => {
-  for (let i = 0; i < getAll(arrow).length; i++) {
-    if (getAll(arrow)[i].x >= 6) {
-      getAll(arrow)[i].remove()
+  if(getAll(arrow).length > 0){
+    if (getFirst(arrow).x >= 8) {
+      getFirst(arrow).remove()
+    }else{
+    getFirst(arrow).x += 1
     }
+  if(tilesWith(arrow,target).length > 0 || tilesWith(arrow,othertarget).length > 0){
+    clearTile(getFirst(arrow).x,getFirst(arrow).y)
+    score+=1
   }
-  for (let i = 0; i < getAll(arrow).length; i++) {
-    getAll(arrow)[i].x += 1
-  }
+}
 }
 
 const updateotherArrows = () => {
-
-  for (let i = 0; i < getAll(otherarrow).length; i++) {
-    if (getAll(otherarrow)[i].x >= 6) {
-      getAll(otherarrow)[i].remove()
+  if(getAll(otherarrow).length > 0){
+    if (getFirst(otherarrow).x >= 8) {
+      getFirst(otherarrow).remove()
+    }else{
+    getFirst(otherarrow).x += 1
     }
+  if(tilesWith(otherarrow,target).length > 0 || tilesWith(otherarrow,othertarget).length > 0){
+    clearTile(getFirst(otherarrow).x,getFirst(otherarrow).y)
+    score2 += 1
   }
-  for (let i = 0; i < getAll(otherarrow).length; i++) {
-    getAll(otherarrow)[i].x += 1
-  }
+}
+  addText("P1: \n" + score.toString(),{x:1,y:1})
+  addText("P2: \n" + score2.toString(),{x:1,y:13})
+  addText(timer.toString(),{x:1,y:6})
 }
 
 const updateTarget = () => {
   if (Math.random() > threshold) {
     if (Math.random() > 0.5) {
-      addSprite(Math.floor(Math.random() * 4) + 3, 0, target)
+      addSprite(Math.floor(Math.random() * 5) + 4, 0, target)
     } else {
-      addSprite(Math.floor(Math.random() * 4) + 3, 7, othertarget)
+      addSprite(Math.floor(Math.random() * 5) + 4, 7, othertarget)
     }
   }
   for(let i = 0; i < getAll(target).length; i++){
-        if (getAll(target)[i].y === 7) {
+        if (getAll(target)[i].y === height-1) {
       getAll(target)[i].remove()
     }
   }
@@ -188,27 +199,15 @@ const updateTarget = () => {
   }
 }
 
-const checkHit = () => {
-      for(let j = 0; j < getAll(arrow).length;j++){
-        for(let k = 0; k < getAll(target).length;k++){
-          if(getAll(arrow)[j].x == getAll(target)[k].x && getAll(arrow)[j].y == getAll(target)[k].y){
-            clearTile(arrow[j].x, arrow[j].y)
-          }
-      }
-  }
-    for (let i = 0; i < getAll(otherarrow).length; i++) {
-    if(tilesWith(getAll(otherarrow)[i], target).length > 0||tilesWith(getAll(otherarrow)[i], othertarget).length > 0){
-      clearTile(tilesWith(target,otherarrow)[i].x, tilesWith(target,otherarrow)[i].y);  
-      clearTile(tilesWith(othertarget,otherarrow)[i].x, tilesWith(othertarget,otherarrow)[i].y);     
-      console.log("hit")
-    }
-  }
+const updateTimer = () =>{
+  timer-=1;
 }
-setInterval(checkHit,1);
 
 setInterval(updateArrows, 100);
 setInterval(updateotherArrows, 100);
 setInterval(updateTarget, 500);
+setInterval(updateTimer, 1000);
+
 onInput("w", () => {
   getFirst(player).y -= 1
 })
@@ -216,7 +215,9 @@ onInput("s", () => {
   getFirst(player).y += 1
 })
 onInput("d", () => {
+  if(tilesWith(arrow).length === 0){
   addSprite(getFirst(player).x + 1, getFirst(player).y, arrow)
+  }
 })
 
 onInput("i", () => {
@@ -226,7 +227,9 @@ onInput("k", () => {
   getFirst(player2).y += 1
 })
 onInput("l", () => {
+  if(tilesWith(otherarrow).length === 0){
   addSprite(getFirst(player2).x + 1, getFirst(player2).y, otherarrow)
+  }
 })
 
 
