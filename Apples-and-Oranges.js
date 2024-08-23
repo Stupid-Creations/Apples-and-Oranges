@@ -2,7 +2,7 @@
 First time? Check out the tutorial game:
 https://sprig.hackclub.com/gallery/getting_started
 
-@title: Archery
+@title: Apples and Oranges
 @author: 
 @tags: []
 @addedOn: 2024-00-00
@@ -17,7 +17,7 @@ const otherarrow = "a"
 const ground_grass = 'g'
 let score = 0
 let score2 = 0
-let timer = 60
+let timer = 10
 
 setLegend(
   [player, bitmap`
@@ -173,7 +173,13 @@ const levels = [
 .p.AT..
 ...AT..
 .......
-.......`
+.......`,map`
+......
+......
+.P.aT.
+.p.AT.
+......
+......`
 ]
 
 setMap(levels[level])
@@ -212,9 +218,13 @@ const updateotherArrows = () => {
   
   }
 }
-  addText("P1: \n" + score.toString(),{x:1,y:1})
-  addText("P2: \n" + score2.toString(),{x:1,y:13})
-  addText(timer.toString(),{x:1,y:6})
+  addText("P1: \n" + score.toString(),{x:1,y:1,color: color`6`})
+  addText("P2: \n" + score2.toString(),{x:1,y:13,color: color`6`})
+  let x = timer.toString()
+  if (timer < 10){
+    x = "0"+timer.toString()
+  }
+  addText(x,{x:1,y:7,color: color`6`})
   }
 }
 
@@ -246,7 +256,44 @@ const updateTarget = () => {
   }
 }
 
+const handleReset = () => {
+  if(level !== 0 && level !== 1){
+    onInput("j", () => {
+    clearText()
+    level = 0
+      setMap(levels[level])
+    })
+  }
+}
+
 const updateTimer = () =>{
+  if (timer <= 0){
+    if (score > score2){
+      clearText()
+      level = 3
+      timer = 60
+      setMap(levels[level])
+      addText("Red Wins!\n\n\n\n\n\n\n\n\n\n\nPress J to reset",{x:2,y:1,color: color`3`})
+      setInterval(handleReset,1)
+    }
+    if (score < score2){
+      clearText()
+      level = 2
+      timer = 60
+      setMap(levels[level])
+      addText("Orange Wins!\n\n\n\n\n\n\n\n\n\n\nPress J to reset",{x:2,y:1,color: color`9`})
+          setInterval(handleReset,1)
+    }
+    if (score == score2){
+      clearText()
+      timer = 60
+      level = 4
+      setMap(levels[level])
+      addText("It's a Draw...\n\n\n\n\n\n\n\n\n\n\nPress J to reset",{x:2,y:1,color: color`6`})
+            setInterval(handleReset,1)
+
+    }
+  }
   if(level === 0){
   timer-=1;
   }
@@ -287,7 +334,7 @@ onInput("l", () => {
 
 
 if (level === 1){
-  addText("Apples'n Oranges \n\n\n\n\n\n\n\n\n\n\n\n\nPress A to start",{x:2,y:1,color:color`0`})
+  addText("Apples'n Oranges \n\n\n\n\n\n\n\n\n\n\n\n\nPress A to start",{x:2,y:1,color:color`6`})
   onInput("a", () => {
     clearText(),
     level = 0
